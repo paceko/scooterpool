@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-	<div id='homepage-block'>
+    <div id='homepage-block'>
 
     <style>
       #map {
@@ -194,65 +194,42 @@ Google Maps -->
         
         }
             //create marker 1 and 2 
-            var marker1;
-            var marker2;
             // binding 2 DOM elements to 2 variables
             var loc = document.getElementById("location");
             var dest = document.getElementById("destination");
             // when var loc and var dest are done then go do this event
-            loc.onblur = function () 
-            { 
-                var title = loc.value;
+            var query = function (callback, event) { 
+                var title = loc.value; // value input field
                 //look up coordinates for title + ", san francisco"
                 // I know this key shouldn't be in here but this is just showing for demo
                 var myUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="
                     + title + "san francisco" + "&key=AIzaSyB_MPHVLyO6buf5XC0xuE6ssrhOXTUSxiw";
-                $.ajax({type: "GET", url: myUrl, dataType: 'json'
-                    }).done(function(result) 
-                    {
-                        var coordsx = parseFloat(result.results[0].geometry.location.lat);
-                        var coordsy = parseFloat(result.results[0].geometry.location.lng);
-                        if(typeof marker1 != "undefined")
-                        {
-                            marker1.setMap(null);    
-                        }
-                        marker1 = new google.maps.Marker({
-                            position: {lat: coordsx, lng: coordsy},
-                            map: map,
-                            title: title,
-                            icon: 'http://imagizer.imageshack.us/v2/100x75q90/924/lChjmU.png'
-           
-                        });    
+
+                $.ajax({
+                    type: "GET", 
+                    url: myUrl, 
+                    dataType: 'json'
+                }).done(function(result) {
+                    var coordsx = parseFloat(result.results[0].geometry.location.lat);
+                    var coordsy = parseFloat(result.results[0].geometry.location.lng);
+
+                    var marker = new google.maps.Marker({
+                        position: {lat: coordsx, lng: coordsy},
+                        map: map,
+                        title: title,
+                        icon: 'http://imagizer.imageshack.us/v2/100x75q90/924/lChjmU.png'
+                    });    
+                    callback(marker);
                          
-                    });
+                });
             };
 
-            dest.onblur = function () 
-            { 
-                var title = dest.value;
-             
-                var myUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="
-                    + title + " san francisco" + "&key=AIzaSyB_MPHVLyO6buf5XC0xuE6ssrhOXTUSxiw";
-                $.ajax({type: "GET", url: myUrl, dataType: 'json'
-                    }).done(function(result) 
-                    {
-                        var coordsx = parseFloat(result.results[0].geometry.location.lat);
-                        var coordsy = parseFloat(result.results[0].geometry.location.lng);
-                        //marker2.setPosition(new google.maps.LatLng(coordsx, coordsy));
-                        if(typeof marker2 != "undefined")
-                        {
-                            marker2.setMap(null);    
-                        }
-                        marker2 = new google.maps.Marker({
-                            position: {lat: coordsx, lng: coordsy},
-                            map: map,
-                            title: title,
-                            icon: 'http://imagizer.imageshack.us/v2/100x75q90/924/lChjmU.png'
-           
-                        });    
-
-                    });
-            };
+            loc.onblur = query.bind(null, function(marker) {
+                marker.setMap(null);    
+            });
+            dest.onblur = query.bind(null, function(marker) {
+                marker.setMap(null);
+            });
 
 
       } //close init map
