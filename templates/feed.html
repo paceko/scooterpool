@@ -199,7 +199,7 @@ Google Maps -->
             var dest = document.getElementById("destination");
             // when var loc and var dest are done then go do this event
             var query = function (callback, event) { 
-                var title = loc.value; // value input field
+                var title = event.target.value; // value input field
                 //look up coordinates for title + ", san francisco"
                 // I know this key shouldn't be in here but this is just showing for demo
                 var myUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="
@@ -225,9 +225,11 @@ Google Maps -->
             };
 
             loc.onblur = query.bind(null, function(marker) {
+                console.log('callback called for loc: ', marker);
                 marker.setMap(null);    
             });
             dest.onblur = query.bind(null, function(marker) {
+                console.log('callback called for dest: ', marker);
                 marker.setMap(null);
             });
 
